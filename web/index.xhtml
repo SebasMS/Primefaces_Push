@@ -1,0 +1,43 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui">
+    <h:head>
+        <title>Notificaciones Push</title>
+    </h:head>
+    <h:body>
+        <!--El growl es el mensage primefaces que se muestra al momento de ocurrir un evento en algún canal-->
+        <p:growl id="msj" widgetVar="wmsj" showDetail="true" />        
+        <!--Soccket va estar buscando si hay una nueva notificación en los canales creados en la aplicación-->
+        <p:socket onMessage="handleMessage" channel="/notify" >
+            <!--Actualizar el formulario cuanto se dispara el evento Socket-->
+            <p:ajax event="message" update=":frm:dtPersons" />
+        </p:socket>        
+        <!--Script que activa el mensaje growl de primefaces-->
+        <script type="text/javascript">
+            function handleMessage(facesmessage) {
+                facesmessage.severity = 'info'; /* También hay mensajes de tipo warning, error, fatal */
+                PF('wmsj').show([facesmessage]); /* Muestra el mensaje que contiene el growl*/
+            }
+        </script>        
+        <h:form id="frm">
+            <p:dataTable id="dtPersons" value="#{beanPerson.list}" var="p" rows="10" paginator="true" 
+                         paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}" 
+                         rowsPerPageTemplate="5,10,15">
+                <p:column headerText="Nombres" filterBy="#{p.name}" filterMatchMode="contains">
+                    <p:outputLabel value="#{p.name}" />
+                </p:column>
+                
+                <p:column headerText="Apellidos" filterBy="#{p.lastname}" filterMatchMode="contains">
+                    <p:outputLabel value="#{p.lastname}" />
+                </p:column>
+                
+                <p:column headerText="Edad" filterBy="#{p.age}" filterMatchMode="exact">
+                    <p:outputLabel value="#{p.age}" />
+                </p:column>
+            </p:dataTable>
+        </h:form>
+    </h:body>
+</html>
+
